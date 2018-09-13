@@ -75,15 +75,8 @@ MemList::MemList(unsigned int s_addr, unsigned int block_size)
 {
     // To be implemented(replace the two lines below)
     MemBlock * temp = new MemBlock(s_addr, block_size);
-    free_head = NULL;
-    reserved_head = NULL;
-
-    if (free_head == NULL && reserved_head == NULL)
-    { 
-    free_head -> setAddr(start_addr) -> temp->getAddr();
-    free_head -> setSize(size) = temp -> getSize();
-    free_head -> setNext(next) = NULL;
-    } 
+    free_head = temp;
+    reserved_head = NULL; 
 
 
 }
@@ -99,29 +92,28 @@ MemList::MemList(unsigned int s_addr, unsigned int block_size)
 //
 MemBlock * MemList::reserveMemBlock(unsigned int block_size_1)
 {
-    MemBlock * temp = new MemBlock(reserved_head -> getAddr(start_addr), reserved_head -> getSize(size);
+    free_head -> setAddr(free_head -> getAddr() + block_size_1);
+    free_head -> setSize(free_head -> getSize() - block_size_1);
     if (reserved_head == NULL)
     {	     
-    free_head -> setAddr(start_addr) = free_head -> getAddr() + block_size_1;
-    free_head -> setSize(size) = free_head -> getSize() - block_size_1);
-    reserved_head -> setAddr(start_addr) = 0;
-    reserved_head -> setSize(size) = block_size_1;
-    reserved_head -> setNext(next) = NULL;
+     reserved_head -> setAddr(0);	    
+     reserved_head -> setSize(block_size_1);
     }
 
-    else if
+    else
     {
-     free_head -> setAddr(start_addr) = free_head -> getAddr() + block_size_1;
-     free_head -> setSize(size) = free_head -> getSize() - block_size_1;
-     reserved_head -> setAddr(start_addr) = reserved_head -> getSize();
-     reserved_head -> setSize) = block_size_1;
-     MemBlock * current = reserved_head -> getAddr();
-     current -> setNext(next) = temp -> getNext();
+     free_head -> setAddr(free_head -> getAddr() + block_size_1);
+     free_head -> setSize(free_head -> getSize() - block_size_1);
+     reserved_head -> setAddr(reserved_head -> getSize());
+     reserved_head -> setSize(block_size_1);
+     MemBlock * current = reserved_head;
+     current -> setNext(temp -> getNext());
      while (current -> getNext() != NULL)
      {
-     setNext(current) = current -> getNext(); 
+     current -> setNext(current -> getNext()); 
      return current -> getNext();
      }
+    } 
 }
 
 
@@ -131,11 +123,13 @@ MemBlock * MemList::reserveMemBlock(unsigned int block_size_1)
 //
 unsigned int MemList::reservedSize()
 {
+
+   unsigned int q;	
     MemBlock * current = reserved_head;
-    setNext(current) = current -> getNext();
     while (current)
     {	    
-    int q += (getSize(current-> start_addr) + getSize(current -> size);
+    current -> setNext(current -> getNext());
+     q += current->getAddr() + current -> getSize();
     }
     return q;
 }
@@ -146,7 +140,8 @@ unsigned int MemList::reservedSize()
 unsigned int MemList::freeSize()
 {
     // To be implemente
-    return  ;
+   unsigned int p = free_head -> getAddr() + free_head -> getSize();
+   return p ;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

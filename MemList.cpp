@@ -76,6 +76,7 @@ MemList::MemList(unsigned int s_addr, unsigned int block_size)
     // To be implemented(replace the two lines below)
     MemBlock * temp = new MemBlock(s_addr, block_size);
     free_head = temp;
+    free_head -> setNext(NULL);
     reserved_head = NULL; 
 
 
@@ -92,30 +93,32 @@ MemList::MemList(unsigned int s_addr, unsigned int block_size)
 //
 MemBlock * MemList::reserveMemBlock(unsigned int block_size_1)
 {
+    if (free_head -> getSize() >= block_size_1)
+    {
+    MemBlock * temp = new MemBlock(free_head -> getAddr(), block_size_1);
+    temp -> setNext(NULL);
     free_head -> setAddr(free_head -> getAddr() + block_size_1);
     free_head -> setSize(free_head -> getSize() - block_size_1);
     if (reserved_head == NULL)
     {	     
-     reserved_head -> setAddr(0);	    
-     reserved_head -> setSize(block_size_1);
+     reserved_head = temp;
+     return reserved_head;
     }
 
     else
     {
-     free_head -> setAddr(free_head -> getAddr() + block_size_1);
-     free_head -> setSize(free_head -> getSize() - block_size_1);
-     reserved_head -> setAddr(reserved_head -> getSize());
-     reserved_head -> setSize(block_size_1);
-     MemBlock * current = reserved_head;
-     current -> setNext(temp -> getNext());
-     while (current -> getNext() != NULL)
-     {
-     current -> setNext(current -> getNext()); 
-     return current -> getNext();
+     MemBlock * current = temp;	    
+     temp -> setNext(reserved_head);
+     reserved_head = current;
+     return reserved_head;
      }
-    } 
-}
+    }
 
+   else if (free_head -> getSize() < block_size_1)
+   {
+    return NULL;
+   }
+}
 
 // Return the total size of all blocks in the Reserved List
 //
@@ -124,12 +127,12 @@ MemBlock * MemList::reserveMemBlock(unsigned int block_size_1)
 unsigned int MemList::reservedSize()
 {
 
-   unsigned int q;	
+   unsigned int q = 0;	
     MemBlock * current = reserved_head;
     while (current)
     {	    
-    current -> setNext(current -> getNext());
-     q += current->getAddr() + current -> getSize();
+     q += current -> getSize();
+     current = current -> getNext();
     }
     return q;
 }
@@ -140,7 +143,11 @@ unsigned int MemList::reservedSize()
 unsigned int MemList::freeSize()
 {
     // To be implemente
-   unsigned int p = free_head -> getAddr() + free_head -> getSize();
+    unsigned int p;
+   MemBlock * current = free_head;
+    
+    p = free_head -> getSize();
+   
    return p ;
 }
 
